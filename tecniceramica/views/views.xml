@@ -68,6 +68,33 @@
                     </field>
                   </record>
 
+                  <record model="ir.ui.view" id="herencia_module_purchase">
+                    <field name="name">herencia list</field>
+                    <field name="model">purchase.order</field>
+                    <field name="inherit_id" ref="purchase.purchase_order_form" />
+                    <field name="arch" type="xml">
+                      <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position = "after">
+                        <field name="unidad"/>
+                        <!--field name="metros"/-->
+                        <field name="cajas"/>
+
+                        <field name="unidad_x" invisible="1"/>
+                        <field name="metros_x" invisible="1"/>
+                        <field name="cajas_x" invisible="1"/>
+                      </xpath>
+                      <!--xpath expr = "//field[@name='line_ids']/tree/field[@name='account_id']" position = "before" >
+                        <field name="unidad"/>
+                        <field name="metros"/>
+                        <field name="cajas"/>
+
+                        <field name="unidad_x" invisible="1"/>
+                        <field name="metros_x" invisible="1"/>
+                        <field name="cajas_x" invisible="1"/>
+                      </xpath-->
+                    </field>
+                  </record>
+
+
                     <!-- Productos -->
     <record model="ir.ui.view" id="herencia_module_pr">
       <field name="name">herencia pr list</field>
