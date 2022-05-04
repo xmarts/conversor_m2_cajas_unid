@@ -23,25 +23,20 @@ class TecniCeramicaStock(models.Model):
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    unidad = fields.Float(string='Unidad',  store=True,digits=(3,3))
-    metros = fields.Float(string='Metros', store=True,digits=(3,3))
+    unidad = fields.Float(string='Unidad', store=True,digits=(3,3))
+    metros = fields.Float(string='Metros',store=True,digits=(3,3))
     cajas = fields.Float(string='Caja', store=True, digits=(3,3))
     #type = ields.selection()
     unidad_x = fields.Float(store=True) #compute='traerDatos' compute='_traer_datos_c',
     metros_x = fields.Float(store=True)
     cajas_x = fields.Float(store=True)
 
-    @api.onchange('product_id', 'cajas', 'quantity')
-    def _traer_datos(self):
-        for line in self:
-            if self.product_id:
-                self.unidad_x = self.product_id.unidad
-                self.metros_x = self.product_id.metros
-                self.cajas_x = self.product_id.cajas
-
-                self.unidad = self.quantity/self.cajas_x*self.unidad_x
-                self.cajas = self.quantity/self.cajas_x
-                    #self.quantity = self.unidad*self.metros_x
+    #@api.depends('unidad_x', 'cajas_x')
+#    def _traer_datos(self):
+        #for line in self:
+            #unidad = line.quantity/line.product_id.cajas*line.product_id.unidad
+            #cajas = line.quantity/line.product_id.cajas
+                #self.quantity = self.unidad*self.metros_x
             #return self.unidad
 
                 #caja * unidad_x = unidad
@@ -122,3 +117,11 @@ class PurchaseOrderLine(models.Model):
 
                 #caja * unidad_x = unidad
                 #metros / cajas_X = cajas
+
+    def _prepare_account_move_line(self, move):
+        res = super(PurchaseOrderLine, self)._prepare_account_move_line(move)
+        res.update({
+        'cajas': self.cajas,
+        'unidad': self.unidad,
+        })
+        return res
