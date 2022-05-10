@@ -67,16 +67,20 @@ class SaleOrderLine(models.Model):
     metros_x = fields.Float(store=True)
     cajas_x = fields.Float(store=True)
 
+    product = fields.Boolean(default=False)
+
     @api.onchange('product_id', 'cajas', 'product_uom_qty')
     def _traer_datos(self):
         for line in self:
-            if self.product_id:
+            if self.product_id.type == 'product':
+                self.product = True
                 self.unidad_x = line.product_id.unidad
                 self.metros_x = line.product_id.metros
                 self.cajas_x = line.product_id.cajas
 
-                self.unidad = self.cajas*self.unidad_x
-                self.cajas = self.product_uom_qty/self.cajas_x
+                if line.product_id.cajas:
+                    self.unidad = self.cajas*self.unidad_x
+                    self.cajas = self.product_uom_qty/self.cajas_x
                 #self.quantity = self.unidad*self.metros_x
             #return self.unidad
 
