@@ -72,15 +72,15 @@ class SaleOrderLine(models.Model):
     @api.onchange('product_id', 'cajas', 'product_uom_qty')
     def _traer_datos(self):
         for line in self:
-            if self.product_id.type == 'product':
-                self.product = True
-                self.unidad_x = line.product_id.unidad
-                self.metros_x = line.product_id.metros
-                self.cajas_x = line.product_id.cajas
+            if line.product_id.type == 'product':
+                line.product = True
+                line.unidad_x = line.product_id.unidad
+                line.metros_x = line.product_id.metros
+                line.cajas_x = line.product_id.cajas
 
                 if line.product_id.cajas:
-                    self.unidad = self.cajas*self.unidad_x
-                    self.cajas = self.product_uom_qty/self.cajas_x
+                    line.unidad = round(line.cajas*line.unidad_x)
+                    line.cajas = line.product_uom_qty/line.cajas_x
                 #self.quantity = self.unidad*self.metros_x
             #return self.unidad
 
@@ -129,3 +129,27 @@ class PurchaseOrderLine(models.Model):
         'unidad': self.unidad,
         })
         return res
+
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
+
+    unidad = fields.Float()
+    cajas = fields.Float()
+
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
+
+    @api.depends('move_line_ids')
+    def _get_values_stock_move(self):
+        for inv in self:
+
+            sm = self.env['stock.move'].search([('picking_id','=', inv.id)])
+
+            for line in inv.move_line_ids:
+                res = sm.search([('id','=',line.move_id.id),('product_id','=',line.product_id.id)], limit=1)
+                if res:
+                    line.unidad = res.unidad
+                    line.cajas = res.cajas
+
+
+
