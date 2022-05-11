@@ -59,9 +59,9 @@ class AccountMoveLine(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    unidad = fields.Float(string='Unidad',default=1.0, store=True, digits=(3,3))
-    metros = fields.Float(string='Metros',default=1.0, store=True, digits=(3,3))
-    cajas = fields.Float(string='Caja',default=1.0, store=True, digits=(3,3))
+    unidad = fields.Float(string='Unidad',default=0.0, store=True, digits=(3,3))
+    metros = fields.Float(string='Metros',default=0.0, store=True, digits=(3,3))
+    cajas = fields.Float(string='Caja',default=0.0, store=True, digits=(3,3))
 
     unidad_x = fields.Float(store=True) #compute='traerDatos'
     metros_x = fields.Float(store=True)
