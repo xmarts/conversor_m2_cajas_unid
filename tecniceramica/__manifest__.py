@@ -28,6 +28,7 @@
         'views/views.xml',
         'views/templates.xml',
         'report/report_deliveryslip_inherit.xml',
+        'report/report_invoice_document.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
