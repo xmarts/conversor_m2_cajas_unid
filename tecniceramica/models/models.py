@@ -139,17 +139,33 @@ class StockMoveLine(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    @api.depends('move_line_ids')
-    def _get_values_stock_move(self):
-        for inv in self:
+    def _get_infor_stock_move(self):
+        lista = []
+        for rec in self.move_ids_without_package:
+            lista.append({
+                "product_id": rec.product_id.id,
+                "product_uom_qty": rec.product_uom_qty,
+                "reserved_availability": rec.reserved_availability,
+                "unidad": rec.unidad,
+                "cajas": rec.cajas
+            })
 
-            sm = self.env['stock.move'].search([('picking_id','=', inv.id)])
+        return lista
 
-            for line in inv.move_line_ids:
-                res = sm.search([('id','=',line.move_id.id),('product_id','=',line.product_id.id)], limit=1)
-                if res:
-                    line.unidad = res.unidad
-                    line.cajas = res.cajas
+# class StockPicking(models.Model):
+#     _inherit = 'stock.picking'
+
+#     @api.depends('move_line_ids')
+#     def _get_values_stock_move(self):
+#         for inv in self:
+
+#             sm = self.env['stock.move'].search([('picking_id','=', inv.id)])
+
+#             for line in inv.move_line_ids:
+#                 res = sm.search([('id','=',line.move_id.id),('product_id','=',line.product_id.id)], limit=1)
+#                 if res:
+#                     line.unidad = res.unidad
+#                     line.cajas = res.cajas
 
 
 
