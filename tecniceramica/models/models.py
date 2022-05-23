@@ -7,6 +7,7 @@ from odoo import fields, api, models, _
 
 from odoo.tools import float_is_zero, float_compare, safe_eval, date_utils, email_split, email_escape_char, email_re
 from odoo.tools.misc import formatLang, format_date, get_lang
+from odoo.exceptions import ValidationError
 
 
 _logger = logging.getLogger(__name__)
@@ -86,6 +87,8 @@ class SaleOrderLine(models.Model):
 
                 #caja * unidad_x = unidad
                 #metros / cajas_X = cajas
+
+
     def _prepare_invoice_line(self):
         res = super(SaleOrderLine, self)._prepare_invoice_line()
         res.update({
@@ -152,20 +155,15 @@ class StockPicking(models.Model):
 
         return lista
 
-# class StockPicking(models.Model):
-#     _inherit = 'stock.picking'
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
 
-#     @api.depends('move_line_ids')
-#     def _get_values_stock_move(self):
-#         for inv in self:
-
-#             sm = self.env['stock.move'].search([('picking_id','=', inv.id)])
-
-#             for line in inv.move_line_ids:
-#                 res = sm.search([('id','=',line.move_id.id),('product_id','=',line.product_id.id)], limit=1)
-#                 if res:
-#                     line.unidad = res.unidad
-#                     line.cajas = res.cajas
-
-
+    @api.constrains('order_line')
+    def _check_exist_product_in_line(self):
+      for rec in self:
+          exist_product_list = []
+          for line in rec.order_line:
+             if line.product_id.id in exist_product_list:
+                raise ValidationError(_('Producto duplicado en las lineas de la orden.'))
+             exist_product_list.append(line.product_id.id)
 
