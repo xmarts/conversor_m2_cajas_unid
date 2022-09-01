@@ -118,7 +118,10 @@ class PurchaseOrderLine(models.Model):
                 self.cajas_x = line.product_id.cajas
 
                 self.unidad = self.cajas*self.unidad_x
-                self.cajas = self.product_qty/self.cajas_x
+                if self.product_id.type == 'product':
+                    self.cajas = self.product_uom_qty/self.cajas_x
+                if self.product_id.type == 'consu' or self.product_id.type == 'service':
+                    self.cajas = None   
                 #self.quantity = self.unidad*self.metros_x
             #return self.unidad
 
@@ -163,7 +166,7 @@ class SaleOrder(models.Model):
       for rec in self:
           exist_product_list = []
           for line in rec.order_line:
-             if line.product_id.id in exist_product_list:
-                raise ValidationError(_('Producto duplicado en las lineas de la orden.'))
+            #  if line.product_id.id in exist_product_list:
+                # raise ValidationError(_('Producto duplicado en las lineas de la orden.'))
              exist_product_list.append(line.product_id.id)
 
