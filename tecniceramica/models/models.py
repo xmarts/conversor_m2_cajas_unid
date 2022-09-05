@@ -148,6 +148,7 @@ class StockPicking(models.Model):
     def _get_infor_stock_move(self):
         lista = []
         for rec in self.move_ids_without_package:
+            
             lista.append({
                 "product_id": rec.product_id.id,
                 "product_uom_qty": rec.product_uom_qty,
