@@ -78,7 +78,6 @@ class SaleOrderLine(models.Model):
                 line.unidad_x = line.product_id.unidad
                 line.metros_x = line.product_id.metros
                 line.cajas_x = line.product_id.cajas
-
                 if line.product_id.cajas:
                     line.unidad = round(line.cajas*line.unidad_x)
                     line.cajas = line.product_uom_qty/line.cajas_x
@@ -121,7 +120,7 @@ class PurchaseOrderLine(models.Model):
                 if self.product_id.type == 'product':
                     self.cajas = self.product_uom_qty/self.cajas_x
                 if self.product_id.type == 'consu' or self.product_id.type == 'service':
-                    self.cajas = None   
+                    self.cajas = None  
                 #self.quantity = self.unidad*self.metros_x
             #return self.unidad
 
