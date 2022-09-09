@@ -32,30 +32,6 @@ class AccountMoveLine(models.Model):
     metros_x = fields.Float(store=True)
     cajas_x = fields.Float(store=True)
 
-    #@api.depends('unidad_x', 'cajas_x')
-#    def _traer_datos(self):
-        #for line in self:
-            #unidad = line.quantity/line.product_id.cajas*line.product_id.unidad
-            #cajas = line.quantity/line.product_id.cajas
-                #self.quantity = self.unidad*self.metros_x
-            #return self.unidad
-
-                #caja * unidad_x = unidad
-                #metros / cajas_X = cajas
-    #@api.depends('quantity')
-    #def _traer_datos_c(self):
-    #    for line in self.move_id:
-    #        if line.type == "in_invoice":
-    #            for i in self:
-    #                if len(i.product_id):
-    #                    self.unidad_x = i.product_id.unidad
-    #                    self.metros_x = i.product_id.metros
-    #                    self.cajas_x = i.product_id.cajas
-
-    #                    self.unidad_c = self.quantity/self.cajas_x*line.unidad_x
-    #                    self.cajas_c = self.quantity/self.cajas_x
-
-
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -81,6 +57,8 @@ class SaleOrderLine(models.Model):
                 if line.product_id.cajas:
                     line.unidad = round(line.cajas*line.unidad_x)
                     line.cajas = line.product_uom_qty/line.cajas_x
+            if line.product_id.type == 'consu' or line.product_id.type == 'service':
+                line.cajas = None 
                 #self.quantity = self.unidad*self.metros_x
             #return self.unidad
 
@@ -110,17 +88,29 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('product_id', 'cajas', 'product_qty')
     def _traer_datos(self):
-        for line in self:
-            if self.product_id:
-                self.unidad_x = line.product_id.unidad
-                self.metros_x = line.product_id.metros
-                self.cajas_x = line.product_id.cajas
+        # for line in self:
+        #     if self.product_id:
+        #         self.unidad_x = line.product_id.unidad
+        #         self.metros_x = line.product_id.metros
+        #         self.cajas_x = line.product_id.cajas
 
-                self.unidad = self.cajas*self.unidad_x
-                if self.product_id.type == 'product':
-                    self.cajas = self.product_uom_qty/self.cajas_x
-                if self.product_id.type == 'consu' or self.product_id.type == 'service':
-                    self.cajas = None  
+        #         self.unidad = self.cajas*self.unidad_x
+        #         if self.product_id.type == 'product':
+        #             self.cajas = self.product_uom_qty/self.cajas_x
+        #         if self.product_id.type == 'consu' or self.product_id.type == 'service':
+        #             self.cajas = None  
+
+        for line in self:
+            if line.product_id.type == 'product':
+                line.product = True
+                line.unidad_x = line.product_id.unidad
+                line.metros_x = line.product_id.metros
+                line.cajas_x = line.product_id.cajas
+                if line.product_id.cajas:
+                    line.unidad = round(line.cajas*line.unidad_x)
+                    line.cajas = line.product_uom_qty/line.cajas_x
+            if line.product_id.type == 'consu' or line.product_id.type == 'service':
+                line.cajas = None
                 #self.quantity = self.unidad*self.metros_x
             #return self.unidad
 
